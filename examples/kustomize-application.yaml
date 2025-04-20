@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kustomize-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/autsu/argocd-lab.git
+    targetRevision: HEAD
+    path: kustomize/overlays/prod # 指向包含kustomization.yaml的目录
+    kustomize:
+      namePrefix: prod-
+      images:
+        - nginx:1.21.0
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kustomize-demo
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      selfHeal: true
+      prune: true

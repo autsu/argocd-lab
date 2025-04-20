@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jsonnet-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/autsu/argocd-lab.git
+    targetRevision: HEAD
+    path: jsonnet
+    directory:
+      jsonnet:
+        extVars:
+          - name: env
+            value: prod
+          - name: namespace
+            value: jsonnet-demo
+        libs:
+          - vendor/jsonnet-libs
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: jsonnet-demo
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    automated:
+      selfHeal: true
+      prune: true
